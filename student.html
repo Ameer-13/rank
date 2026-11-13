@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقيمات الطلاب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style> 
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background: linear-gradient(135deg, #d1effa 0%, #e0f2fe 50%, #f3e8ff 100%);
+            background-attachment: fixed;
+        }
+        html.dark body {
+            background: radial-gradient(circle at 80% 10%, #054c83 0%, #0f172a 45%, #090d16 100%);
+            background-attachment: fixed;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+        }
+        html.dark .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        html.dark .glass-header {
+            background: rgba(15, 23, 42, 0.65);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        html.dark .glass-input {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+    </style>
+</head>
+<body class="text-gray-800 dark:text-gray-100 min-h-screen relative overflow-x-hidden">
+
+    <div class="fixed top-20 left-10 w-80 h-80 bg-emerald-500/20 dark:bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-10 right-10 w-96 h-96 bg-blue-500/20 dark:bg-indigo-600/20 rounded-full blur-[130px] pointer-events-none -z-10"></div>
+
+    <header class="glass-header sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/90 to-teal-400/90 border border-white/30 flex items-center justify-center text-white shadow-lg shadow-emerald-500/25">
+                        <i class="fa-solid fa-user-graduate text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-gray-900 dark:text-white"> تقيمات الطلاب </h1>
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">مرحباً بك في لوحة المتصدرين</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleDarkMode()" class="p-2.5 text-gray-600 dark:text-gray-300 bg-white/40 dark:bg-white/5 hover:bg-white/70 dark:hover:bg-white/10 border border-white/30 dark:border-white/10 rounded-xl transition-all">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <button onclick="logout()" class="flex items-center gap-2 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm px-4 py-2 rounded-xl font-bold backdrop-blur-md transition-all">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span class="hidden sm:inline">رجوع</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <section class="relative overflow-hidden rounded-3xl p-6 text-white shadow-2xl text-center border border-white/20 bg-gradient-to-br from-teal-900/80 via-blue-950/85 to-indigo-950/85 backdrop-blur-xl">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-emerald-400/20 blur-[80px] pointer-events-none"></div>
+            <h2 class="text-2xl font-extrabold mb-6 relative z-10"><i class="fa-solid fa-award text-amber-400"></i> أوائل الطلاب (لوحة الشرف)</h2>
+            <div id="podiumContainer" class="flex justify-center items-end gap-4 max-w-3xl mx-auto min-h-[14rem] relative z-10"></div>
+        </section>
+
+        <section class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full sm:max-w-md">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchInput" oninput="updateDashboard()" placeholder="ابحث عن اسمك أو رقمك هنا..." class="w-full pr-10 pl-4 py-2.5 rounded-xl glass-input text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/60">
+            </div>
+        </section>
+
+        <section class="glass-panel rounded-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/10 bg-white/30 dark:bg-white/5">
+                <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-ol text-emerald-500"></i> الترتيب العام للطلاب
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-white/40 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-semibold border-b border-gray-200/50 dark:border-white/10">
+                        <tr>
+                            <th class="py-3.5 px-4 text-center w-32">المركز والنقاط</th>
+                            <th class="py-3.5 px-4">الطلاب (المشتركين بالمركز)</th>
+                            <th class="py-3.5 px-4 text-center">المجموعة</th>
+                            <th class="py-3.5 px-4 w-64">سجل النقاط</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="divide-y divide-gray-200/40 dark:divide-white/10"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
+        if (!loggedUser || loggedUser.role !== 'guest_student') {
+            window.location.href = 'index.html'; 
+        }
+
+        const API_URL = "https://api.npoint.io/40c73d1ea3eaa28cb1e8";
+        let sysUsers = [];
+
+        async function loadStudentData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                sysUsers = data.users || [];
+                updateDashboard();
+            } catch (e) {
+                console.error("خطأ في جلب بيانات الطلاب:", e);
+            }
+        }
+
+        window.onload = () => { 
+            loadStudentData(); 
+            setInterval(loadStudentData, 5000); // تحديث تلقائي للبيانات كل 5 ثوانٍ
+        };
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            document.getElementById('themeIcon').className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('loggedUser');
+            window.location.href = 'index.html';
+        }
+
+        function updateDashboard() {
+            const students = sysUsers.filter(u => u.role === 'student');
+            students.sort((a, b) => b.score - a.score);
+
+            let currentRank = 1;
+            const sorted = students.map((s, i, arr) => {
+                if (i > 0 && s.score < arr[i - 1].score) {
+                    currentRank++;
+                }
+                return { ...s, globalRank: currentRank };
+            });
+
+            const rankGroups = {};
+            sorted.forEach(s => {
+                if (!rankGroups[s.globalRank]) rankGroups[s.globalRank] = [];
+                rankGroups[s.globalRank].push(s);
+            });
+            const distinctRanks = Object.keys(rankGroups).map(Number).sort((a, b) => a - b);
+            
+            const podium = document.getElementById('podiumContainer');
+            const top3Ranks = distinctRanks.slice(0, 3);
+            if(top3Ranks.length) {
+                podium.innerHTML = top3Ranks.map((rank, idx) => {
+                    const groupStudents = rankGroups[rank];
+                    const pos = idx === 0 ? 1 : idx === 1 ? 2 : 3;
+                    const h = pos === 1 ? 'h-36' : pos === 2 ? 'h-28' : 'h-20';
+                    const c = pos === 1 ? 'from-amber-400/90 to-yellow-600/90 border-amber-200/50' : pos === 2 ? 'from-slate-200/90 to-slate-400/90 border-white/60' : 'from-amber-700/90 to-amber-900/90 border-amber-500/40';
+                    
+                    const namesHTML = groupStudents.map(st => 
+                        `<div class="flex items-center justify-center gap-1 w-full py-0.5">
+                            <span class="text-sm drop-shadow">${st.avatar || '🎓'}</span>
+                            <span class="text-xs font-bold truncate drop-shadow">${st.name}</span>
+                        </div>`
+                    ).join('');
+
+                    return `<div class="flex flex-col items-center flex-1 max-w-[165px] order-${pos===1?2:pos===2?1:3}">
+                        <div class="w-full flex flex-col items-center justify-end max-h-24 overflow-y-auto px-1">${namesHTML}</div>
+                        <div class="w-full ${h} bg-gradient-to-t ${c} backdrop-blur-md border-t border-x rounded-t-2xl mt-2 flex flex-col items-center pt-2 text-gray-950 font-extrabold shadow-lg">
+                            <span>#${rank}</span>
+                            <span class="text-[10px] opacity-80">${groupStudents[0].score} نقطة</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } else podium.innerHTML = '';
+
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = sorted.filter(s => s.name.toLowerCase().includes(q) || s.username.toLowerCase().includes(q));
+
+            const filteredGroups = [];
+            filtered.forEach(s => {
+                let grp = filteredGroups.find(item => item.rank === s.globalRank);
+                if (!grp) {
+                    grp = { rank: s.globalRank, score: s.score, students: [] };
+                    filteredGroups.push(grp);
+                }
+                grp.students.push(s);
+            });
+
+            document.getElementById('studentsTableBody').innerHTML = filteredGroups.map(grp => {
+                let rankBadge = '';
+                if (grp.rank === 1) rankBadge = '<span class="text-amber-500 font-black text-lg drop-shadow-sm block">NO.1 👑</span>';
+                else if (grp.rank === 2) rankBadge = '<span class="text-slate-400 font-bold text-lg block">NO.2 🥈</span>';
+                else if (grp.rank === 3) rankBadge = '<span class="text-amber-600 font-bold text-lg block">NO.3 🥉</span>';
+                else rankBadge = `<span class="text-gray-500 dark:text-gray-400 font-bold block">المركز ${grp.rank}</span>`;
+
+                const countBadge = grp.students.length > 1 ? `<span class="inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-bold">تعادل (${grp.students.length} طلاب)</span>` : '';
+
+                const namesCol = grp.students.map(s => `
+                    <div class="flex items-center gap-3 py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                        <span class="text-xl bg-white/40 dark:bg-white/10 w-9 h-9 rounded-xl flex items-center justify-center border border-white/30 dark:border-white/10 shrink-0">${s.avatar || '🎓'}</span>
+                        <div>
+                            <p class="font-bold">${s.name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${s.username}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                const groupsCol = grp.students.map(s => `
+                    <div class="py-3 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                        <span class="bg-emerald-500/15 border border-emerald-400/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-lg text-xs font-medium">${s.group}</span>
+                    </div>
+                `).join('');
+
+                const testsCol = grp.students.map(s => {
+                    let testsList = '<div class="text-gray-400">لا توجد بيانات</div>';
+                    if (s.tests && s.tests.length > 0) {
+                        testsList = s.tests.map(t => {
+                            let gradeTxt = t.grade > 0 ? `+${t.grade}` : t.grade;
+                            let color = t.grade >= 0 ? 'text-emerald-500' : 'text-rose-500';
+                            return `<div><span class="text-gray-400">•</span> ${t.name} <span class="font-mono ${color}" dir="ltr">(${gradeTxt})</span></div>`;
+                        }).join('');
+                    }
+                    return `
+                        <div class="py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                            <div class="space-y-1 max-h-16 overflow-y-auto text-xs text-gray-600 dark:text-gray-300 pr-2 border-r-2 border-emerald-400/40">
+                                ${testsList}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                <tr class="hover:bg-white/40 dark:hover:bg-white/5 transition-colors">
+                    <td class="py-4 px-4 text-center align-middle bg-white/10 dark:bg-white/[0.02] border-l border-gray-200/30 dark:border-white/10">
+                        ${rankBadge}
+                        <div class="text-sm font-extrabold text-gray-900 dark:text-white mt-1">${grp.score} نقطة</div>
+                        ${countBadge}
+                    </td>
+                    <td class="py-4 px-4 align-middle">${namesCol}</td>
+                    <td class="py-4 px-4 text-center align-middle">${groupsCol}</td>
+                    <td class="py-4 px-4 align-middle">${testsCol}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

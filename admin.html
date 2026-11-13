@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة - منصة النخبة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style> 
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #dbeafe 100%);
+            background-attachment: fixed;
+        }
+        html.dark body {
+            background: radial-gradient(circle at 15% 15%, #1e1b4b 0%, #0f172a 45%, #090d16 100%);
+            background-attachment: fixed;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+        }
+        html.dark .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        html.dark .glass-header {
+            background: rgba(15, 23, 42, 0.65);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        html.dark .glass-input {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-modal {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        html.dark .glass-modal {
+            background: rgba(17, 24, 39, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+    </style>
+</head>
+<body class="text-gray-800 dark:text-gray-100 min-h-screen relative overflow-x-hidden">
+
+    <div class="fixed top-20 right-10 w-80 h-80 bg-blue-500/20 dark:bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-10 left-10 w-96 h-96 bg-purple-500/20 dark:bg-purple-600/20 rounded-full blur-[130px] pointer-events-none -z-10"></div>
+
+    <header class="glass-header sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600/90 to-indigo-500/90 border border-white/25 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+                        <i class="fa-solid fa-user-shield text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                            لوحة الإدارة 
+                            <span id="syncIndicator" class="text-[11px] font-normal px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">متصل بالسحابة</span>
+                        </h1>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold" id="adminWelcomeName">مرحباً</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="toggleDarkMode()" class="p-2.5 text-gray-600 dark:text-gray-300 bg-white/40 dark:bg-white/5 hover:bg-white/70 dark:hover:bg-white/10 border border-white/30 dark:border-white/10 rounded-xl transition-all">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <button onclick="openModal('manageTestsModal')" class="flex items-center gap-2 bg-emerald-600/85 hover:bg-emerald-600 border border-white/20 text-white font-medium text-sm px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-emerald-600/20 backdrop-blur-md transition-all">
+                        <i class="fa-solid fa-file-pen"></i> <span class="hidden sm:inline">إدارة الاختبارات</span>
+                    </button>
+                    <button onclick="openModal('addAdminModal')" class="flex items-center gap-2 bg-purple-600/85 hover:bg-purple-600 border border-white/20 text-white font-medium text-sm px-4 py-2 rounded-xl shadow-lg shadow-purple-600/20 backdrop-blur-md hidden md:flex transition-all">
+                        <i class="fa-solid fa-user-tie"></i> <span>إضافة مشرف</span>
+                    </button>
+                    <button onclick="openModal('studentModal')" class="flex items-center gap-2 bg-blue-600/85 hover:bg-blue-600 border border-white/20 text-white font-medium text-sm px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-blue-600/20 backdrop-blur-md transition-all">
+                        <i class="fa-solid fa-user-plus"></i> <span class="hidden sm:inline">إضافة طالب</span>
+                    </button>
+                    <button onclick="logout()" class="flex items-center gap-2 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm px-3 sm:px-4 py-2 rounded-xl font-bold backdrop-blur-md transition-all">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <section class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-5">
+            <div class="glass-panel rounded-2xl p-5 flex items-center justify-between transition-transform hover:-translate-y-0.5">
+                <div><p class="text-xs text-gray-500 dark:text-gray-400 font-medium">إجمالي الطلاب</p><h3 id="statTotalStudents" class="text-2xl font-extrabold mt-1">0</h3></div>
+                <div class="w-12 h-12 bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fa-solid fa-user-graduate"></i></div>
+            </div>
+            <div class="glass-panel rounded-2xl p-5 flex items-center justify-between transition-transform hover:-translate-y-0.5">
+                <div><p class="text-xs text-gray-500 dark:text-gray-400 font-medium">المجموعات</p><h3 id="statTotalGroups" class="text-2xl font-extrabold mt-1">0</h3></div>
+                <div class="w-12 h-12 bg-purple-500/15 border border-purple-400/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fa-solid fa-layer-group"></i></div>
+            </div>
+            <div class="glass-panel rounded-2xl p-5 flex items-center justify-between transition-transform hover:-translate-y-0.5">
+                <div><p class="text-xs text-gray-500 dark:text-gray-400 font-medium">الطالب المتصدر</p><h3 id="statTopStudent" class="text-base font-bold mt-1 truncate max-w-[140px]">--</h3></div>
+                <div class="w-12 h-12 bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fa-solid fa-crown"></i></div>
+            </div>
+        </section>
+
+        <section class="relative overflow-hidden rounded-3xl p-6 text-white shadow-2xl text-center border border-white/20 bg-gradient-to-br from-blue-900/80 via-indigo-900/80 to-purple-950/80 backdrop-blur-xl">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-amber-400/20 blur-[80px] pointer-events-none"></div>
+            <h2 class="text-2xl font-extrabold mb-6 relative z-10"><i class="fa-solid fa-award text-amber-400"></i> أوائل الطلاب</h2>
+            <div id="podiumContainer" class="flex justify-center items-end gap-4 max-w-3xl mx-auto min-h-[13rem] relative z-10"></div>
+        </section>
+
+        <section class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full sm:max-w-sm">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchInput" oninput="updateDashboard()" placeholder="ابحث باسم الطالب أو المعرف..." class="w-full pr-10 pl-4 py-2.5 rounded-xl glass-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <select id="groupFilter" onchange="updateDashboard()" class="py-2.5 px-3 rounded-xl glass-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60 dark:bg-slate-900/70"></select>
+                <button onclick="openModal('manageGroupsModal')" title="إدارة المجموعات" class="p-2.5 bg-white/50 dark:bg-white/10 border border-white/30 dark:border-white/10 rounded-xl hover:bg-white/80 dark:hover:bg-white/20 transition-all"><i class="fa-solid fa-sliders"></i></button>
+                <button onclick="openModal('manageTestsModal')" title="إدارة الاختبارات" class="p-2.5 bg-emerald-500/20 border border-emerald-400/30 text-emerald-700 dark:text-emerald-400 rounded-xl hover:bg-emerald-500/30 transition-all"><i class="fa-solid fa-list-check"></i></button>
+            </div>
+        </section>
+
+        <section class="glass-panel rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-white/40 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-semibold border-b border-gray-200/50 dark:border-white/10">
+                        <tr>
+                            <th class="py-3.5 px-4 text-center w-32">المركز والنقاط</th>
+                            <th class="py-3.5 px-4">الطلاب (المشتركين بالمركز)</th>
+                            <th class="py-3.5 px-4 text-center">المجموعة</th>
+                            <th class="py-3.5 px-4 w-56">سجل النقاط</th>
+                            <th class="py-3.5 px-4 text-center">إضافة نتيجة اختبار</th>
+                            <th class="py-3.5 px-4 text-center">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="divide-y divide-gray-200/40 dark:divide-white/10"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Student -->
+    <div id="studentModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-modal rounded-3xl max-w-md w-full p-6">
+            <h3 class="font-bold text-lg mb-4" id="modalTitle">إضافة/تعديل طالب</h3>
+            <form onsubmit="saveStudentForm(event)" class="space-y-4">
+                <input type="hidden" id="formUsername">
+                <input type="text" id="formName" required placeholder="اسم الطالب" class="w-full px-3.5 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="formGroup" required class="w-full px-3.5 py-2.5 rounded-xl glass-input dark:bg-slate-900/80 focus:outline-none focus:ring-2 focus:ring-blue-500/60"></select>
+                    <input type="number" id="formScore" STEP="any" min="0" required placeholder="رصيد النقاط الأولي" class="w-full px-3.5 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200/40 dark:border-white/10">
+                    <button type="button" onclick="closeModal('studentModal')" class="px-4 py-2 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl font-semibold transition-all">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600/90 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-600/25 transition-all">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Admin -->
+    <div id="addAdminModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-modal rounded-3xl max-w-md w-full p-6">
+            <h3 class="font-bold text-lg mb-4 text-purple-600 dark:text-purple-400">إضافة مشرف جديد</h3>
+            <form onsubmit="saveAdminForm(event)" class="space-y-4">
+                <input type="text" id="adminName" required placeholder="اسم المشرف" class="w-full px-3.5 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-purple-500/60">
+                <input type="text" id="adminUsername" required placeholder="اسم المستخدم (للدخول)" class="w-full px-3.5 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-purple-500/60">
+                <input type="text" id="adminPassword" required placeholder="كلمة المرور" class="w-full px-3.5 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-purple-500/60">
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200/40 dark:border-white/10">
+                    <button type="button" onclick="closeModal('addAdminModal')" class="px-4 py-2 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl font-semibold transition-all">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-purple-600/90 hover:bg-purple-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-600/25 transition-all">إنشاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Groups -->
+    <div id="manageGroupsModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-modal rounded-3xl max-w-md w-full p-6">
+            <h3 class="font-bold text-lg mb-4">إدارة المجموعات</h3>
+            <form onsubmit="addGroup(event)" class="flex gap-2 mb-4">
+                <input type="text" id="newGroupInp" required placeholder="اسم المجموعة..." class="flex-grow px-3.5 py-2 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-purple-500/60">
+                <button type="submit" class="px-4 bg-purple-600/90 hover:bg-purple-600 text-white rounded-xl font-semibold shadow-md">إضافة</button>
+            </form>
+            <div id="groupsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+            <button onclick="closeModal('manageGroupsModal')" class="w-full mt-4 py-2.5 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl font-semibold transition-all">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- Modal: Dynamic Tests Management -->
+    <div id="manageTestsModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-modal rounded-3xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-emerald-600 dark:text-emerald-400">إدارة أنواع الاختبارات</h3>
+                <button onclick="clearAllTests()" class="text-xs text-rose-500 hover:underline font-semibold">حذف الكل</button>
+            </div>
+            <form onsubmit="addTestType(event)" class="flex gap-2 mb-4">
+                <input type="text" id="newTestInp" required placeholder="اسم الاختبار (مثلاً: اختبار الشهر الأول)..." class="flex-grow px-3.5 py-2 rounded-xl glass-input text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/60">
+                <button type="submit" class="px-4 py-2 bg-emerald-600/90 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold shadow-md">إضافة</button>
+            </form>
+            <div id="testsTypesList" class="space-y-2 max-h-56 overflow-y-auto"></div>
+            <button onclick="closeModal('manageTestsModal')" class="w-full mt-4 py-2.5 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl font-semibold transition-all">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
+        if (!loggedUser || loggedUser.role !== 'admin') window.location.href = 'index.html';
+        document.getElementById('adminWelcomeName').textContent = 'مرحباً، ' + loggedUser.name;
+
+        const API_URL = "https://api.npoint.io/40c73d1ea3eaa28cb1e8";
+
+        let sysUsers = [];
+        let groups = [];
+        let testTypes = [];
+
+        async function loadDataFromCloud() {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.textContent = "جاري التحميل...";
+            indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400";
+            
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                sysUsers = data.users || [];
+                groups = data.groups || [];
+                testTypes = data.testTypes || [];
+                
+                renderGroupOptions(); 
+                renderTestTypesList();
+                updateDashboard();
+
+                indicator.textContent = "متصل بالسحابة";
+                indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400";
+            } catch (e) {
+                console.error("خطأ في جلب البيانات:", e);
+                indicator.textContent = "خطأ في الاتصال";
+                indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400";
+            }
+        }
+
+        async function syncData() {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.textContent = "جاري الحفظ...";
+            indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400";
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        users: sysUsers,
+                        groups: groups,
+                        testTypes: testTypes
+                    })
+                });
+                indicator.textContent = "تم الحفظ سحابياً";
+                indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400";
+            } catch (e) {
+                console.error("خطأ في حفظ البيانات:", e);
+                alert("فشل حفظ البيانات على السحابة، تحقق من اتصال الإنترنت!");
+                indicator.textContent = "فشل الحفظ";
+                indicator.className = "text-[11px] font-normal px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400";
+            }
+        }
+
+        window.onload = () => { 
+            loadDataFromCloud(); 
+        };
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            document.getElementById('themeIcon').className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+        }
+
+        function logout() { sessionStorage.removeItem('loggedUser'); window.location.href = 'index.html'; }
+
+        function renderGroupOptions() {
+            document.getElementById('groupFilter').innerHTML = '<option value="ALL">جميع المجموعات</option>' + groups.map(g => `<option value="${g}">${g}</option>`).join('');
+            document.getElementById('formGroup').innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
+            document.getElementById('groupsList').innerHTML = groups.map(g => `<div class="flex justify-between items-center p-2.5 bg-white/40 dark:bg-white/5 rounded-xl border border-white/30 dark:border-white/10"><span>${g}</span><button onclick="removeGroup('${g}')" class="text-rose-500 hover:bg-rose-500/10 p-1.5 rounded-lg"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+        }
+
+        function renderTestTypesList() {
+            const container = document.getElementById('testsTypesList');
+            if (testTypes.length === 0) {
+                container.innerHTML = '<p class="text-center text-xs text-gray-400 py-4">لا توجد اختبارات مضافة حالياً. أضف اختباراً جديداً من الأعلى.</p>';
+                return;
+            }
+            container.innerHTML = testTypes.map((t, index) => `
+                <div class="flex justify-between items-center p-2.5 bg-white/40 dark:bg-white/5 rounded-xl border border-white/30 dark:border-white/10">
+                    <span class="text-sm font-medium">${t}</span>
+                    <button onclick="removeTestType(${index})" class="text-rose-500 hover:bg-rose-500/15 p-1.5 rounded-lg transition-colors">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addTestType(e) {
+            e.preventDefault();
+            const inp = document.getElementById('newTestInp');
+            const val = inp.value.trim();
+            if (val && !testTypes.includes(val)) {
+                testTypes.push(val);
+                syncData();
+                renderTestTypesList();
+                updateDashboard();
+                inp.value = '';
+            } else if (testTypes.includes(val)) {
+                alert('هذا الاختبار موجود مسبقاً!');
+            }
+        }
+
+        function removeTestType(index) {
+            testTypes.splice(index, 1);
+            syncData();
+            renderTestTypesList();
+            updateDashboard();
+        }
+
+        function clearAllTests() {
+            if (testTypes.length === 0) return;
+            if (confirm('هل أنت متأكد من حذف جميع خيارات الاختبارات؟')) {
+                testTypes = [];
+                syncData();
+                renderTestTypesList();
+                updateDashboard();
+            }
+        }
+
+        function updateDashboard() {
+            const students = sysUsers.filter(u => u.role === 'student');
+            students.sort((a, b) => b.score - a.score);
+
+            let currentRank = 1;
+            const sorted = students.map((s, i, arr) => {
+                if (i > 0 && s.score < arr[i - 1].score) {
+                    currentRank++;
+                }
+                return { ...s, globalRank: currentRank };
+            });
+
+            const rankGroups = {};
+            sorted.forEach(s => {
+                if (!rankGroups[s.globalRank]) rankGroups[s.globalRank] = [];
+                rankGroups[s.globalRank].push(s);
+            });
+            const distinctRanks = Object.keys(rankGroups).map(Number).sort((a, b) => a - b);
+            
+            document.getElementById('statTotalStudents').textContent = students.length;
+            document.getElementById('statTotalGroups').textContent = groups.length;
+            if (distinctRanks.length > 0) {
+                const topStudents = rankGroups[distinctRanks[0]];
+                document.getElementById('statTopStudent').textContent = topStudents.map(s => s.name).join(' ، ');
+            } else {
+                document.getElementById('statTopStudent').textContent = '--';
+            }
+
+            const podium = document.getElementById('podiumContainer');
+            const top3Ranks = distinctRanks.slice(0, 3);
+            if(top3Ranks.length) {
+                podium.innerHTML = top3Ranks.map((rank, idx) => {
+                    const groupStudents = rankGroups[rank];
+                    const pos = idx === 0 ? 1 : idx === 1 ? 2 : 3;
+                    const h = pos === 1 ? 'h-36' : pos === 2 ? 'h-28' : 'h-20';
+                    const c = pos === 1 ? 'from-amber-400/90 to-yellow-600/90 border-amber-200/50' : pos === 2 ? 'from-slate-200/90 to-slate-400/90 border-white/60' : 'from-amber-700/90 to-amber-900/90 border-amber-500/40';
+                    
+                    const namesHTML = groupStudents.map(st => 
+                        `<div class="text-xs font-bold truncate w-full text-center drop-shadow leading-tight py-0.5">${st.name}</div>`
+                    ).join('');
+
+                    return `<div class="flex flex-col items-center flex-1 max-w-[160px] order-${pos===1?2:pos===2?1:3}">
+                        <div class="w-full flex flex-col items-center justify-end max-h-20 overflow-y-auto px-1">${namesHTML}</div>
+                        <div class="w-full ${h} bg-gradient-to-t ${c} backdrop-blur-md border-t border-x rounded-t-2xl mt-2 flex flex-col items-center pt-2 text-gray-950 font-extrabold shadow-lg">
+                            <span>#${rank}</span>
+                            <span class="text-[10px] opacity-80">${groupStudents[0].score} نقطة</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } else podium.innerHTML = '';
+
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const g = document.getElementById('groupFilter').value;
+            const filtered = sorted.filter(s => (s.name.toLowerCase().includes(q) || s.username.toLowerCase().includes(q)) && (g==='ALL' || s.group===g));
+            
+            const filteredGroups = [];
+            filtered.forEach(s => {
+                let grp = filteredGroups.find(item => item.rank === s.globalRank);
+                if (!grp) {
+                    grp = { rank: s.globalRank, score: s.score, students: [] };
+                    filteredGroups.push(grp);
+                }
+                grp.students.push(s);
+            });
+
+            let testOptionsHTML = '';
+            if (testTypes.length > 0) {
+                testOptionsHTML = testTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+            } else {
+                testOptionsHTML = '<option value="">-- أضف اختباراً أولاً --</option>';
+            }
+
+            document.getElementById('studentsTableBody').innerHTML = filteredGroups.map(grp => {
+                let rankBadge = '';
+                if (grp.rank === 1) rankBadge = '<span class="text-amber-500 font-black text-lg drop-shadow-sm block">NO.1 👑</span>';
+                else if (grp.rank === 2) rankBadge = '<span class="text-slate-400 font-bold text-lg block">NO.2 🥈</span>';
+                else if (grp.rank === 3) rankBadge = '<span class="text-amber-600 font-bold text-lg block">NO.3 🥉</span>';
+                else rankBadge = `<span class="text-gray-500 dark:text-gray-400 font-bold block">المركز ${grp.rank}</span>`;
+
+                const countBadge = grp.students.length > 1 ? `<span class="inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-300 font-bold">تعادل (${grp.students.length} طلاب)</span>` : '';
+
+                const namesCol = grp.students.map(s => `
+                    <div class="py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                        <p class="font-bold">${s.name}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${s.username}</p>
+                    </div>
+                `).join('');
+
+                const groupsCol = grp.students.map(s => `
+                    <div class="py-2.5 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                        <span class="bg-purple-500/15 border border-purple-400/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-lg text-xs font-medium">${s.group}</span>
+                    </div>
+                `).join('');
+
+                const testsCol = grp.students.map(s => {
+                    let testsList = '<div class="text-gray-400">لا توجد بيانات</div>';
+                    if (s.tests && s.tests.length > 0) {
+                        testsList = s.tests.map((t, tIdx) => {
+                            let gradeTxt = t.grade > 0 ? `+${t.grade}` : t.grade;
+                            let color = t.grade >= 0 ? 'text-emerald-500' : 'text-rose-500';
+                            return `
+                            <div class="flex items-center justify-between group">
+                                <div><span class="text-gray-400">•</span> ${t.name} <span class="font-mono ${color}" dir="ltr">(${gradeTxt})</span></div>
+                                <button onclick="removeStudentTest('${s.username}', ${tIdx})" title="حذف هذه الدرجة" class="text-rose-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity px-1">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>`;
+                        }).join('');
+                    }
+                    return `
+                        <div class="py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                            <div class="space-y-1 max-h-20 overflow-y-auto text-xs text-gray-600 dark:text-gray-300 pr-2 border-r-2 border-blue-400/40">
+                                ${testsList}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const addGradeCol = grp.students.map(s => `
+                    <div class="py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5 flex flex-col gap-1.5 items-center justify-center">
+                        <div class="flex gap-1 w-36">
+                            <select id="testName_${s.username}" class="text-xs p-1.5 rounded-lg glass-input dark:bg-slate-900/80 w-full focus:outline-none">
+                                ${testOptionsHTML}
+                            </select>
+                            <button onclick="openModal('manageTestsModal')" title="إضافة اختبار جديد" class="bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 border border-white/30 dark:border-white/10 px-2 rounded-lg text-xs transition-all">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="flex gap-1 w-36">
+                            <input type="number" id="testGrade_${s.username}" placeholder="الدرجة" class="w-full text-xs p-1.5 rounded-lg glass-input focus:outline-none">
+                            <button onclick="addGradeToStudent('${s.username}')" class="bg-emerald-500/90 hover:bg-emerald-500 text-white px-2.5 rounded-lg font-bold shadow-md shadow-emerald-500/20">+</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                const actionsCol = grp.students.map(s => `
+                    <div class="py-2 first:pt-0 last:pb-0 border-b last:border-b-0 border-gray-200/30 dark:border-white/5">
+                        <button onclick="editStudent('${s.username}')" class="text-blue-500 p-2 hover:bg-blue-500/15 rounded-xl transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="delStudent('${s.username}')" class="text-rose-500 p-2 hover:bg-rose-500/15 rounded-xl transition-colors"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `).join('');
+
+                return `
+                <tr class="hover:bg-white/40 dark:hover:bg-white/5 transition-colors">
+                    <td class="py-4 px-4 text-center align-middle bg-white/10 dark:bg-white/[0.02] border-l border-gray-200/30 dark:border-white/10">
+                        ${rankBadge}
+                        <div class="text-sm font-extrabold text-gray-900 dark:text-white mt-1">${grp.score} نقطة</div>
+                        ${countBadge}
+                    </td>
+                    <td class="py-4 px-4 align-middle">${namesCol}</td>
+                    <td class="py-4 px-4 text-center align-middle">${groupsCol}</td>
+                    <td class="py-4 px-4 align-middle">${testsCol}</td>
+                    <td class="py-4 px-2 text-center align-middle">${addGradeCol}</td>
+                    <td class="py-4 px-4 text-center align-middle">${actionsCol}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function addGradeToStudent(uname) {
+            const testSelect = document.getElementById(`testName_${uname}`);
+            const gradeInput = document.getElementById(`testGrade_${uname}`);
+            
+            const testName = testSelect.value;
+            const gradeVal = parseFloat(gradeInput.value);
+
+            if (!testName) {
+                alert('يرجى إضافة اختبار أولاً من زر (+) أو من إدارة الاختبارات');
+                openModal('manageTestsModal');
+                return;
+            }
+            if (isNaN(gradeVal)) return alert('يرجى إدخال رقم الدرجة');
+
+            const idx = sysUsers.findIndex(x => x.username === uname);
+            if (idx !== -1) { 
+                if (!sysUsers[idx].tests) sysUsers[idx].tests = [];
+                sysUsers[idx].tests.push({ name: testName, grade: gradeVal });
+                sysUsers[idx].score = Math.max(0, parseInt(sysUsers[idx].score) + gradeVal);
+                
+                syncData(); 
+                updateDashboard(); 
+            }
+        }
+
+        function removeStudentTest(uname, testIdx) {
+            const idx = sysUsers.findIndex(x => x.username === uname);
+            if (idx !== -1 && sysUsers[idx].tests[testIdx]) {
+                const removedGrade = sysUsers[idx].tests[testIdx].grade;
+                sysUsers[idx].tests.splice(testIdx, 1);
+                sysUsers[idx].score = Math.max(0, parseInt(sysUsers[idx].score) - removedGrade);
+                syncData();
+                updateDashboard();
+            }
+        }
+
+        function openModal(id) { 
+            document.getElementById(id).classList.remove('hidden'); 
+            if(id === 'studentModal') {
+                document.getElementById('formUsername').value = '';
+                document.getElementById('formName').value = '';
+                document.getElementById('formScore').value = 0;
+                document.getElementById('modalTitle').textContent = 'إضافة طالب جديد';
+            }
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function saveStudentForm(e) {
+            e.preventDefault();
+            const uname = document.getElementById('formUsername').value;
+            const name = document.getElementById('formName').value;
+            const grp = document.getElementById('formGroup').value;
+            const scr = parseInt(document.getElementById('formScore').value);
+
+            if (uname) {
+                const idx = sysUsers.findIndex(x => x.username === uname);
+                if (idx !== -1) {
+                    sysUsers[idx].name = name; 
+                    sysUsers[idx].group = grp; 
+                    sysUsers[idx].score = scr;
+                }
+            } else {
+                const newId = 'STD-' + Math.floor(1000 + Math.random() * 9000);
+                sysUsers.push({ role:'student', username:newId, password:'123', name:name, group:grp, score:scr, avatar: '👨‍🎓', tests: scr > 0 ? [{name: 'رصيد أولي', grade: scr}] : [] });
+            }
+            syncData(); closeModal('studentModal'); updateDashboard();
+        }
+
+        function saveAdminForm(e) {
+            e.preventDefault();
+            const aName = document.getElementById('adminName').value.trim();
+            const aUser = document.getElementById('adminUsername').value.trim();
+            const aPass = document.getElementById('adminPassword').value.trim();
+            if(sysUsers.some(u => u.username.toLowerCase() === aUser.toLowerCase())) return alert('اسم المستخدم موجود!');
+            sysUsers.push({ role: 'admin', username: aUser, password: aPass, name: aName, avatar: '👨‍💼' });
+            syncData(); closeModal('addAdminModal'); alert('تم إنشاء الحساب بنجاح');
+            e.target.reset();
+        }
+
+        function delStudent(uname) {
+            if(confirm('تأكيد الحذف؟')) { sysUsers = sysUsers.filter(x => x.username !== uname); syncData(); updateDashboard(); }
+        }
+
+        function editStudent(uname) {
+            const s = sysUsers.find(x => x.username === uname);
+            document.getElementById('formUsername').value = s.username;
+            document.getElementById('formName').value = s.name;
+            document.getElementById('formGroup').value = s.group;
+            document.getElementById('formScore').value = s.score;
+            document.getElementById('modalTitle').textContent = 'تعديل بيانات الطالب';
+            openModal('studentModal');
+        }
+
+        function addGroup(e) { e.preventDefault(); const v = document.getElementById('newGroupInp').value; if(v && !groups.includes(v)) { groups.push(v); syncData(); renderGroupOptions(); e.target.reset(); updateDashboard(); } }
+        function removeGroup(g) { if(sysUsers.some(x => x.group === g)) return alert('المجموعة بها طلاب!'); groups = groups.filter(x => x !== g); syncData(); renderGroupOptions(); updateDashboard(); }
+    </script>
+</body>
+</html>
